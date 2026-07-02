@@ -46,6 +46,19 @@ class Store:
                 [(o.region, o.ts.isoformat(), o.demand_mw, o.forecast_mw)
                  for o in observations])
 
+    def trim_stale_future(self, region: str, latest_ts_iso: str) -> None:
+        """Delete rows newer than the source's own latest hour.
+
+        Guards against a source switch (e.g. demo -> live) leaving behind
+        rows from the other source that are timestamped later than
+        anything the current source has reported — those would otherwise
+        masquerade as the "latest" reading.
+        """
+        with self._connect() as conn:
+            conn.execute(
+                "DELETE FROM observations WHERE region = ? AND ts > ?",
+                (region, latest_ts_iso))
+
     def get_series(self, region: str, hours: int) -> list[Observation]:
         cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
         with self._connect() as conn:

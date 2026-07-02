@@ -34,6 +34,16 @@ class GoldenSentry:
             observations = synthetic.generate_observations()
         self.store.upsert_observations(observations)
 
+        # Guard against a demo->live (or live->demo) switch leaving behind
+        # rows timestamped later than this source's own latest hour.
+        latest_by_region: dict[str, str] = {}
+        for o in observations:
+            ts_iso = o.ts.isoformat()
+            if ts_iso > latest_by_region.get(o.region, ""):
+                latest_by_region[o.region] = ts_iso
+        for region_code, latest_ts_iso in latest_by_region.items():
+            self.store.trim_stale_future(region_code, latest_ts_iso)
+
         regions_payload = []
         for region in REGIONS:
             series = self.store.get_series(region.code, HISTORY_HOURS)
