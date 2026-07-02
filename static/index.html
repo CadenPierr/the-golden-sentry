@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Golden Sentry — Grid Situational Awareness</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="title-block">
+      <h1>&#9679; THE GOLDEN SENTRY</h1>
+      <span class="subtitle">Grid Situational Awareness &middot; AI Watch Officer</span>
+    </div>
+    <div class="meta">
+      <span id="mode-badge" class="badge"></span>
+      <span id="updated-at"></span>
+      <button id="refresh-btn" title="Force a refresh cycle">&#8635; Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="brief-card" class="card">
+      <div class="brief-header">
+        <span id="watch-level" class="level-badge">—</span>
+        <h2 id="brief-headline">Awaiting first watch cycle…</h2>
+      </div>
+      <p id="brief-body"></p>
+      <span id="brief-source" class="source-tag"></span>
+    </section>
+
+    <section id="region-grid"></section>
+
+    <section class="card chart-card">
+      <div class="chart-header">
+        <h3>Demand vs Day-Ahead Forecast — 72h</h3>
+        <select id="region-select"></select>
+      </div>
+      <canvas id="demand-chart" height="90"></canvas>
+    </section>
+
+    <section class="card">
+      <h3>Anomaly Log — trailing 24h</h3>
+      <table id="anomaly-table">
+        <thead>
+          <tr><th>Time (UTC)</th><th>Region</th><th>Type</th><th>Severity</th><th>Detail</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="no-anomalies" class="muted" hidden>No anomalies detected in the trailing 24 hours.</p>
+    </section>
+  </main>
+
+  <footer>
+    Data: U.S. Energy Information Administration (hourly grid monitor) &middot;
+    Analysis: rolling z-score + forecast deviation &middot;
+    Brief: Claude watch officer
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
